@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Saver</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #2c3e50;
+            overflow-x: hidden;
+            background-color: #f0f0f0;
+            transition: background-color 0.5s ease;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #2c3e50;
+        }
+        #linkInput {
+            padding: 0.75rem;
+            width: 100%;
+            border: 1px solid #bdc3c7;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            background-color: #fff;
+            color: #2c3e50;
+        }
+        #linkInput:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.25);
+        }
+        #saveButton {
+            padding: 0.75rem 1.5rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        #saveButton:hover {
+            background-color: #2980b9;
+        }
+        #saveButton:active {
+            background-color: #21618c;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        #savedLinks {
+            text-align: left;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 0.5rem;
+            background-color: #f9f9f9;
+        }
+        #savedLinks h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #3498db;
+            text-align: center;
+            animation: color-change 2s infinite; /* Added animation here */
+        }
+        @keyframes color-change {
+            0% { color: #3498db; }
+            20% { color: #2ecc71; }
+            40% { color: #f1c40f; }
+            60% { color: #e74c3c; }
+            80% { color: #9b59b6; }
+            100% { color: #3498db; }
+        }
+        #savedLinks ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #savedLinks li {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Changed from space-between to space-between */
+            border-bottom: 1px solid #ecf0f1;
+            padding-bottom: 0.75rem;
+            position: relative;
+            overflow: hidden;
+        }
+        #savedLinks li:last-child {
+            border-bottom: none;
+        }
+        #savedLinks li a {
+            color: #2c3e50;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            margin-right: 1rem;
+            word-break: break-all;
+            flex: 1; /* Added to make link take up available space */
+        }
+        #savedLinks li a:hover {
+            color: #3498db;
+        }
+        #savedLinks li button {
+            padding: 0.5rem 1rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-left: 0.5rem; /* Added to create space between buttons */
+        }
+        #savedLinks li button:hover {
+            background-color: #2980b9;
+             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #savedLinks li button:active {
+            background-color: #21618c;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+        }
+        .no-links {
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        /* Emoji Styles */
+        .emoji {
+            position: absolute;
+            font-size: 1.5rem;
+            animation: fly 1s ease-out, drift 2s infinite alternate;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        @keyframes fly {
+            from {
+                transform: translateX(0) translateY(0) scale(1);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(200px) translateY(-100px) scale(0.5);
+                opacity: 0;
+            }
+        }
+        @keyframes drift {
+            from{
+               transform: translateX(0);
+            }
+            to {
+                transform: translateX(10px);
+            }
+        }
+        /* Theme Styles */
+        .theme-default {
+            background-color: #f0f0f0;
+            color: #2c3e50;
+        }
+        .theme-dark {
+            background-color: #1a202c;
+            color: #f7fafc;
+        }
+        .theme-rainbow {
+            background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            color: white;
+            animation: rainbow-animation 10s ease infinite;
+        }
+        @keyframes rainbow-animation {
+            0% { background-position: 0%; }
+            100% { background-position: 100%; }
+        }
+        .theme-random {
+            background-color: #f0f0f0;
+            color: #2c3e50;
+        }
+        /* Theme Picker Styles */
+        .theme-picker {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            gap: 0.5rem;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+        .theme-picker button {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .theme-picker button:hover {
+            transform: scale(1.2);
+        }
+        .theme-default-button { background-color: #f0f0f0; }
+        .theme-rainbow-button { background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); }
+        .theme-random-button {
+             background-color: #8e44ad;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             font-size: 1.5rem;
+             color: #000;
+        }
+        /* Icon Styles */
+        .theme-icon {
+            width: 1.2rem;
+            height: 1.2rem;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .default-icon { background-color: #ffffff; }
+        .rainbow-icon {  background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); }
+        .random-icon { color: #000; }
+        .dark-mode-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            background-color: #000;
+            -webkit-mask-image: url("https://unpkg.com/feather-icons@4.29.1/dist/icons/moon.svg");
+            mask-image: url("https://unpkg.com/feather-icons@4.29.1/dist/icons/moon.svg");
+            -webkit-mask-size: cover;
+            mask-size: cover;
+            content: '';
+            display: inline-block;
+        }
+        .error-message {
+            color: red;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+        #copyright {
+            font-family: 'Inter', sans-serif;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.7);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+            font-size: 0.8rem;
+            margin-top: 2rem;
+        }
+        #copyright.default-theme {
+            color: #000;
+            text-shadow: none;
+        }
+        .hint {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: #7f8c8d;
+            font-size: 0.7rem;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 0.3rem;
+            background-color: #f0f0f0;
+            border: 1px solid #e0e0e0;
+        }
+        .hint:hover {
+            opacity: 1;
+        }
+        .photosensitivity-warning {
+            /* position: absolute;  Changed to relative */
+            bottom: 1rem;
+            left: 1rem;
+            color: #ff0000;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .photosensitivity-warning.rainbow-theme {
+            color: #000;
+        }
+        .theme-random-button.rainbow-theme {
+            color: #ffa500;
+        }
+        #copyright.rainbow-theme {
+            color: #ffa500;
+        }
+
+    </style>
+</head>
+<body class="theme-default">
+    <div class="container">
+        <h1 style="font-style: italic; font-weight: bold;">Save Your Links</h1>
+        <div class="theme-picker">
+            <button class="theme-default-button" data-theme="default" title="Default Theme">
+                <div class="theme-icon default-icon"></div>
+            </button>
+            <button class="theme-rainbow-button" data-theme="rainbow" title="Rainbow Theme">
+                <div class="theme-icon rainbow-icon"></div>
+            </button>
+            <button class="theme-random-button" data-theme="random" title="Random Theme">
+                C
+            </button>
+            <button id="dark-mode-button" title="Toggle Dark Mode">
+                <div class="dark-mode-icon"></div>
+            </button>
+        </div>
+        <input type="text" id="linkInput" placeholder="Enter link here (e.g., www.example.com)">
+        <button id="saveButton">Save Link</button>
+        <div id="savedLinks">
+            <h2 style="animation: color-change 2s infinite;">Saved Links</h2>
+            <p class="no-links">No links saved yet.</p>
+            <ul></ul>
+        </div>
+        <div id="linkError" class="error-message">Please enter a valid URL.</div>
+        <div id="copyright">&copy; Quantum</div>
+        <div class="hint">Press Default button to see copyright notice</div>
+        <div class="photosensitivity-warning">Not suitable for photosensitive people</div>
+    </div>
+    <script>
+        const linkInput = document.getElementById('linkInput');
+        const saveButton = document.getElementById('saveButton');
+        const savedLinksList = document.querySelector('#savedLinks ul');
+        const noLinksMessage = document.querySelector('.no-links');
+        const body = document.body;
+        const emojis = ['😀', '🚀', '🌟', '🎉', '🍕', '🎸', '🎨', '📚', '🐢', '🔥'];
+        const themePicker = document.querySelector('.theme-picker');
+        const darkModeButton = document.getElementById('dark-mode-button');
+        let isDarkMode = false;
+        let currentTheme = 'default';
+        const linkError = document.getElementById('linkError');
+        const copyrightElement = document.getElementById('copyright');
+        const photosensitivityWarning = document.querySelector('.photosensitivity-warning');
+        const randomButton = document.querySelector('.theme-random-button');
+
+
+        // Function to load links from localStorage
+        function loadLinks() {
+            const links = JSON.parse(localStorage.getItem('savedLinks')) || [];
+            if (links.length > 0) {
+                noLinksMessage.style.display = 'none';
+                links.forEach(link => addLinkToUI(link));
+            }
+            return links;
+        }
+        // Function to save links to localStorage
+        function saveLinks(links) {
+            localStorage.setItem('savedLinks', JSON.stringify(links));
+        }
+        // Function to add a link to the UI
+        function addLinkToUI(link) {
+            const listItem = document.createElement('li');
+            const linkElement = document.createElement('a');
+            linkElement.href = link;
+            linkElement.textContent = link;
+            linkElement.target = '_blank';
+            const openButton = document.createElement('button');
+            openButton.textContent = 'Open';
+            openButton.addEventListener('click', () => {
+                window.open(link, '_blank');
+            });
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', (event) => {
+                const linkToRemove = event.target.parentNode.querySelector('a').textContent;
+                savedLinks = savedLinks.filter(link => link !== linkToRemove);
+                saveLinks(savedLinks);
+                event.target.parentNode.remove();
+                if (savedLinks.length === 0) {
+                    noLinksMessage.style.display = 'block';
+                }
+            });
+
+            listItem.appendChild(linkElement);
+            listItem.appendChild(openButton);
+            listItem.appendChild(deleteButton);
+            savedLinksList.appendChild(listItem);
+        }
+        // Load initial links
+        let savedLinks = loadLinks();
+        // Function to add a new link
+        function addLink() {
+            const newLink = linkInput.value.trim();
+            linkError.style.display = 'none';
+
+            if (newLink === '') {
+                alert('Please enter a valid link.');
+                return;
+            }
+            let validURL;
+             if (!/^(https?:\/\/)/.test(newLink)) {
+                validURL =  'https://' + newLink;
+             }
+             else{
+                validURL = newLink;
+             }
+            try {
+                new URL(validURL);
+            } catch (_) {
+                linkError.style.display = 'block';
+                return;
+            }
+
+            if (savedLinks.length === 0) {
+                noLinksMessage.style.display = 'none';
+            }
+            addLinkToUI(validURL);
+            savedLinks.push(validURL);
+            saveLinks(savedLinks);
+            linkInput.value = '';
+            const numEmojis = 5;
+            for (let i = 0; i < numEmojis; i++) {
+                const emoji = document.createElement('span');
+                emoji.classList.add('emoji');
+                emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.style.left = `${Math.random() * 100}px`;
+                emoji.style.animationDelay = `${i * 0.2}s`;
+                saveButton.appendChild(emoji);
+                emoji.addEventListener('animationend', () => emoji.remove());
+            }
+            console.log(`Saved link: ${validURL}`);
+        }
+        // Event Listeners
+        saveButton.addEventListener('click', addLink);
+        linkInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                addLink();
+            }
+        });
+        // Theme Picker
+        themePicker.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target.tagName === 'BUTTON') {
+                const theme = target.dataset.theme;
+                body.classList.remove('theme-default', 'theme-rainbow', 'theme-random', 'theme-dark');
+                body.classList.add(`theme-${theme}`);
+                currentTheme = theme;
+                isDarkMode = false;
+                if (theme === 'random') {
+                    body.style.backgroundColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+                }
+                else if (theme === 'default'){
+                    body.style.backgroundColor = '#ffffff';
+                    copyrightElement.classList.add('default-theme');
+                }
+                else{
+                    copyrightElement.classList.remove('default-theme');
+                }
+                if (theme === 'rainbow') {
+                    photosensitivityWarning.classList.add('rainbow-theme');
+                    randomButton.classList.add('rainbow-theme');
+                    copyrightElement.classList.add('rainbow-theme');
+                } else {
+                    photosensitivityWarning.classList.remove('rainbow-theme');
+                    randomButton.classList.remove('rainbow-theme');
+                    copyrightElement.classList.remove('rainbow-theme');
+                }
+            }
+        });
+
+        // Dark Mode Toggle
+        darkModeButton.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            body.classList.toggle('theme-dark', isDarkMode);
+            body.classList.toggle(`theme-${currentTheme}`, !isDarkMode);
+            if (!isDarkMode) {
+                 if (currentTheme === 'default') {
+                     body.style.backgroundColor = '#ffffff';
+                     copyrightElement.classList.add('default-theme');
+                }
+                else if (currentTheme === 'random'){
+                     body.style.backgroundColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+                     copyrightElement.classList.remove('default-theme');
+                }
+                else if (currentTheme === 'rainbow'){
+                    body.style.backgroundImage = 'linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3)';
+                    copyrightElement.classList.remove('default-theme');
+                    randomButton.classList.add('rainbow-theme');
+                    copyrightElement.classList.add('rainbow-theme');
+                }
+                else{
+                    body.style.backgroundColor = '#f0f0f0';
+                    copyrightElement.classList.remove('default-theme');
+                    photosensitivityWarning.classList.remove('rainbow-theme');
+                    randomButton.classList.remove('rainbow-theme');
+                    copyrightElement.classList.remove('rainbow-theme');
+                }
+
+            }
+            else{
+                 body.style.backgroundColor = '#1a202c';
+                 copyrightElement.classList.remove('default-theme');
+                 photosensitivityWarning.classList.remove('rainbow-theme');
+                 randomButton.classList.remove('rainbow-theme');
+                 copyrightElement.classList.remove('rainbow-theme');
+            }
+        });
+
+        function updateCopyrightPosition() {
+            const container = document.querySelector('.container');
+            const copyrightElement = document.getElementById('copyright');
+            const containerHeight = container.offsetHeight;
+            const viewportHeight = window.innerHeight;
+
+            if (containerHeight < viewportHeight) {
+                copyrightElement.style.position = 'absolute';
+                copyrightElement.style.bottom = '1rem';
+                copyrightElement.style.left = '50%';
+                copyrightElement.style.transform = 'translateX(-50%)';
+            } else {
+                copyrightElement.style.position = 'relative';
+                copyrightElement.style.bottom = 'auto';
+                copyrightElement.style.left = 'auto';
+                copyrightElement.style.transform = 'translateX(0)';
+            }
+        }
+        updateCopyrightPosition();
+        window.addEventListener('resize', updateCopyrightPosition);
+    </script>
+</body>
+</html>
